@@ -19,29 +19,34 @@
 
 package io.temporal.samples.hello;
 
-import static org.junit.Assert.assertEquals;
-
 import io.temporal.api.enums.v1.WorkflowIdReusePolicy;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
+import io.temporal.client.WorkflowStub;
 import io.temporal.samples.hello.HelloSignal.GreetingWorkflow;
 import io.temporal.testing.TestWorkflowRule;
-import java.time.Duration;
-import java.util.List;
+import io.temporal.workflow.Workflow;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import org.junit.Rule;
 import org.junit.Test;
+import org.slf4j.Logger;
 
 /** Unit test for {@link HelloSignal}. Doesn't use an external Temporal service. */
 public class HelloSignalTest {
+  private Logger logger = Workflow.getLogger(HelloSignalTest.class);
 
   @Rule
   public TestWorkflowRule testWorkflowRule =
       TestWorkflowRule.newBuilder()
           .setWorkflowTypes(HelloSignal.GreetingWorkflowImpl.class)
+          .setUseTimeskipping(false)
           .build();
 
   @Test
-  public void testSignal() {
+  public void testSignal() throws TimeoutException, InterruptedException, ExecutionException {
     // Get a workflow stub using the same task queue the worker uses.
     WorkflowOptions workflowOptions =
         WorkflowOptions.newBuilder()
@@ -60,20 +65,27 @@ public class HelloSignalTest {
     // After start for getGreeting returns, the workflow is guaranteed to be started.
     // So we can send a signal to it using workflow stub immediately.
     // But just to demonstrate the unit testing of a long running workflow adding a long sleep here.
-    testWorkflowRule.getTestEnvironment().sleep(Duration.ofDays(1));
     // This workflow keeps receiving signals until exit is called
     workflow.waitForName("World");
     workflow.waitForName("Universe");
-    workflow.exit();
-    // Calling synchronous getGreeting after workflow has started reconnects to the existing
-    // workflow and
-    // blocks until result is available. Note that this behavior assumes that WorkflowOptions are
-    // not configured
-    // with WorkflowIdReusePolicy.AllowDuplicate. In that case the call would fail with
-    // WorkflowExecutionAlreadyStartedException.
-    List<String> greetings = workflow.getGreetings();
-    assertEquals(2, greetings.size());
-    assertEquals("Hello World!", greetings.get(0));
-    assertEquals("Hello Universe!", greetings.get(1));
+
+    WorkflowStub stub = WorkflowStub.fromTyped(workflow);
+
+    CompletableFuture<Void> future =
+        CompletableFuture.runAsync(
+            () -> {
+              try {
+                logger.info("Attempting to exit.");
+                Thread.sleep(1000);
+                workflow.exit();
+              } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+              }
+            });
+
+    logger.info("Getting result.");
+    stub.getResult(10000, TimeUnit.MILLISECONDS, Void.class);
+
+    future.get();
   }
 }
