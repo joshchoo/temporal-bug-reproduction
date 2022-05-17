@@ -246,7 +246,7 @@ public class HelloCancellationScope {
   public static void main(String[] args) {
 
     // Get a Workflow service stub.
-    WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
+    WorkflowServiceStubs service = WorkflowServiceStubs.newInstance();
 
     /*
      * Get a Workflow service client which can be used to start, Signal, and Query Workflow Executions.

@@ -37,7 +37,7 @@ public class Starter {
   private static final String encryptDecryptPassword = "encryptDecryptPassword";
 
   public static void main(String[] args) {
-    WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
+    WorkflowServiceStubs service = WorkflowServiceStubs.newInstance();
 
     // Set crypto data converter in client options
     WorkflowClient client =

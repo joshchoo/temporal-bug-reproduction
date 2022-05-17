@@ -30,7 +30,7 @@ public class AccountActivityWorker {
 
   @SuppressWarnings("CatchAndPrintStackTrace")
   public static void main(String[] args) {
-    WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
+    WorkflowServiceStubs service = WorkflowServiceStubs.newInstance();
     WorkflowClient client = WorkflowClient.newInstance(service);
 
     WorkerFactory factory = WorkerFactory.newInstance(client);

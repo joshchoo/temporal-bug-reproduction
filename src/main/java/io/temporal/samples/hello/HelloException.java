@@ -172,7 +172,7 @@ public class HelloException {
   public static void main(String[] args) {
 
     // Define the workflow service.
-    WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
+    WorkflowServiceStubs service = WorkflowServiceStubs.newInstance();
 
     /*
      * Get a Workflow service client which can be used to start, Signal, and Query Workflow Executions.

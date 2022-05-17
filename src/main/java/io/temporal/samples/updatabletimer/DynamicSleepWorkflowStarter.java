@@ -36,7 +36,7 @@ public class DynamicSleepWorkflowStarter {
   private static final Logger logger = LoggerFactory.getLogger(DynamicSleepWorkflowStarter.class);
 
   public static void main(String[] args) {
-    WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
+    WorkflowServiceStubs service = WorkflowServiceStubs.newInstance();
     WorkflowClient client = WorkflowClient.newInstance(service);
 
     DynamicSleepWorkflow workflow =

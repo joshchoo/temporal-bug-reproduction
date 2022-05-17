@@ -39,7 +39,7 @@ public class Starter {
   private static final String TASK_QUEUE = "CloudEventsConverterQueue";
 
   public static void main(String[] args) {
-    WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
+    WorkflowServiceStubs service = WorkflowServiceStubs.newInstance();
 
     // Add CloudEventsPayloadConverter
     // It has the same encoding type as JacksonJsonPayloadConverter

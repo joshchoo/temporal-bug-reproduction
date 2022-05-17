@@ -41,7 +41,7 @@ public class FileProcessingWorker {
     String hostSpecifiTaskQueue = ManagementFactory.getRuntimeMXBean().getName();
 
     // gRPC stubs wrapper that talks to the local docker instance of temporal service.
-    WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
+    WorkflowServiceStubs service = WorkflowServiceStubs.newInstance();
     // client that can be used to start and signal workflows
     WorkflowClient client = WorkflowClient.newInstance(service);
 
